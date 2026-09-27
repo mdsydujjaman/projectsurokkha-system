@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="bn"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>🔒 Surokkha V3.1 Dual</title>
+<style>
+body{background:#0a0e1a;color:#fff;font-family:sans-serif;padding:12px}
+.box{background:#111;border:1px solid #333;border-radius:12px;padding:16px;margin:12px 0}
+.btn{padding:10px 16px;border:none;border-radius:8px;font-weight:bold;cursor:pointer;margin:4px;font-size:13px}
+.btn-g{background:#00FF88;color:#000} .btn-y{background:#FFD700;color:#000} .btn-b{background:#00BFFF;color:#000} .btn-o{background:#FF8C00;color:#000}
+input{padding:10px;border-radius:8px;border:1px solid #444;background:#000;color:#fff;text-align:center;width:75%}
+#lock{position:fixed;top:0;left:0;width:100%;height:100%;background:#0a0e1a;z-index:999;display:flex;align-items:center;justify-content:center;padding:20px}
+.code{background:#000;border:1px solid #333;padding:12px;border-radius:8px;text-align:left;font-size:11px;overflow:auto;color:#0f0;white-space:pre-wrap;word-break:break-all;line-height:1.6}
+.part{display:inline-block;border:1px solid #00FF88;border-radius:8px;padding:8px 10px;margin:4px;background:rgba(0,255,136,0.1);font-size:12px}
+.label{font-size:11px;color:#888;margin-bottom:6px;display:block}
+</style></head><body>
+
+<div id="lock"><div class="box" style="max-width:350px"><h2>🔒 Surokkha V3.1</h2><p id="lockMsg" style="color:#888;font-size:13px"></p><input type="password" id="p" placeholder="Password দাও"><br><br><button class="btn btn-g" onclick="handleLock()">Unlock / Set Password</button><p style="margin-top:10px;color:#555;font-size:11px">প্রথমবার যেটা দিবে সেটাই Password হবে</p></div></div>
+
+<div class="box" style="text-align:center"><h2>🔒 Project Surokkha System</h2><p style="font-size:10px;color:#666">projectsurokkhasystem.com - Official | V3.1 Dual - Termux + Acode</p>
+<span class="label">📁 Current Project Name</span>
+<input type="text" id="proj" value="projectsurokkha-system"><br><br>
+<input type="text" id="part" value="part-03-projectsurokkha-system" placeholder="Part Name লিখো, যেমন part-03-myapp"><br><br>
+<button class="btn btn-g" onclick="saveAll()">✅ Set & Auto Generate Code</button>
+<p style="margin-top:8px;color:#00FF88;font-size:12px" id="curInfo">Current: projectsurokkha-system | part-03</p>
+</div>
+
+<div class="box"><h3>📚 Part Timeline - <span class="pn">projectsurokkha-system</span></h3>
+<div style="text-align:center;margin:12px 0">
+<div class="part">Part-01<br>Base<br><span style="color:#0f0">CONFIRMED</span></div>
+<div class="part">Part-02<br>V2 UI<br><span style="color:#0f0">CONFIRMED</span></div>
+<div class="part" id="partLive">Part-03<br>Next<br><span style="color:#FFD700">Draft</span></div>
+</div>
+</div>
+
+<div class="box"><span class="label">📥 1. DOWNLOAD CODE - Acode দিয়ে অ্যাপ বানাও / Save করো</span>
+<div class="code" id="downloadCode">Download কোড Auto আসবে...</div>
+<button class="btn btn-b" onclick="copyText('downloadCode')">📋 Download Code Copy</button>
+<button class="btn btn-o" onclick="downloadHTML()">📥 Index V3 Download করো</button>
+</div>
+
+<div class="box"><span class="label">💻 2. TERMUX CODE - <span class="pn">projectsurokkha-system</span> | Part Confirm & Push</span>
+<div class="code" id="termuxCode">Termux কোড Auto আসবে...</div>
+<button class="btn btn-g" onclick="copyText('termuxCode')">📋 Termux Code Copy</button>
+</div>
+
+<div class="box"><span class="label">📱 3. ACODE CODE - Acode তে Part আলাদা খুলো / Edit করো</span>
+<div class="code" id="acodeCode">Acode কোড Auto আসবে...</div>
+<button class="btn btn-b" onclick="copyText('acodeCode')">📋 Acode Code Copy</button>
+</div>
+
+<div class="box"><span class="label">🔄 Master -> Project Transfer - Only CONFIRMED</span>
+<div class="code" id="transferCode">Transfer কোড Auto আসবে...</div>
+<button class="btn btn-y" onclick="copyText('transferCode')">📋 Transfer Code Copy</button>
+</div>
+
+<div class="box"><span class="label">🔐 Password Change</span>
+<input type="text" id="newPass" placeholder="নতুন Password"><button class="btn btn-y" onclick="changePass()">Change</button><span id="passMsg" style="color:#0f0;margin-left:10px"></span><br><br>
+<button class="btn" style="background:#222;color:#fff;border:1px solid #444" onclick="lockNow()">🔒 Lock করো</button>
+<button class="btn" style="background:#ff4444;color:#fff" onclick="if(confirm('Clear?')){localStorage.clear();location.reload()}">Clear</button>
+</div>
+
+<script>
+function getPass(){let s=localStorage.getItem('surokkha_pass');if(!s)return null;try{return atob(s)}catch(e){return null}}
+function initLock(){
+ let cur=getPass();
+ document.getElementById('lockMsg').innerText=cur===null?'প্রথমবার Password সেট করো - যেটা দিবে সেটাই হবে':'Password দাও - ভিতরে ঢুকতে';
+ if(sessionStorage.getItem('unlocked')==='yes')document.getElementById('lock').style.display='none';
+}
+function handleLock(){
+ let inp=document.getElementById('p').value.trim();if(!inp){alert('Password দাও');return;}
+ let cur=getPass();
+ if(cur===null){localStorage.setItem('surokkha_pass',btoa(inp));sessionStorage.setItem('unlocked','yes');document.getElementById('lock').style.display='none';alert('Password Set: '+inp);}
+ else{if(inp===cur){sessionStorage.setItem('unlocked','yes');document.getElementById('lock').style.display='none';}else{alert('ভুল Password');}}
+ document.getElementById('p').value='';
+}
+function generateCodes(){
+ let proj=document.getElementById('proj').value.trim()||'projectsurokkha-system';
+ let part=document.getElementById('part').value.trim()||'part-03-'+proj;
+ document.getElementById('curInfo').innerText='Current: '+proj+' | '+part;
+ document.getElementById('partLive').innerHTML=part.split('-').slice(0,2).join('-')+'<br>'+proj.substring(0,8)+'<br><span style="color:#FFD700">Draft</span>';
+ document.querySelectorAll('.pn').forEach(e=>e.innerText=proj);
+
+ // 1. DOWNLOAD CODE
+ document.getElementById('downloadCode').innerText=
+`📥 Download করো V3.1:
+👉 Live: https://mdsydujjaman.github.io/projectsurokkha-system/
+👉 GitHub: https://github.com/mdsydujjaman/projectsurokkha-system
+
+Acode দিয়ে অ্যাপ বানাতে:
+1. Acode খোলো
+2. Open Folder -> /storage/emulated/0/Surakkha-System
+3. index.html খোলো
+4. Preview দেখো
+
+File: index.html | Project: ${proj} | Part: ${part}`;
+
+ // 2. TERMUX CODE
+ document.getElementById('termuxCode').innerText=
+`cd /storage/emulated/0/Surakkha-System
+# Current Project: ${proj}
+# Current Part: ${part}
+bash safe.sh status
+bash safe.sh history
+bash safe.sh snapshot ${part}
+bash safe.sh confirm ${part}
+bash safe.sh lock index.html
+git add index.html .surakkha/
+git commit -m "${part} - ${proj} - CONFIRMED"
+git push origin main
+# ✅ Live: https://mdsydujjaman.github.io/${proj}/`;
+
+ // 3. ACODE CODE
+ document.getElementById('acodeCode').innerText=
+`📱 Acode Part System - ${proj}
+
+# Part আলাদা আলাদা খুলতে:
+cd /storage/emulated/0/Surakkha-System
+
+# Part List দেখো:
+bash safe.sh list
+
+# ${part} কে Acode Preview হিসেবে খুলো:
+bash safe.sh unlock index.html
+# Acode তে index.html খোলো, Edit করো
+
+# Part আলাদা File হিসেবে Save করতে (Acode তে ভিন্ন ভিন্ন):
+cp index.html ${part}.html
+# এখন Acode তে ${part}.html আলাদা খুলবে
+# Part-01, Part-02, Part-03 আলাদা আলাদা File
+
+# Acode তে কাজ শেষ হলে Termux এ Confirm:
+bash safe.sh snapshot ${part}
+bash safe.sh confirm ${part}
+bash safe.sh lock index.html`;
+
+ // 4. TRANSFER CODE
+ document.getElementById('transferCode').innerText=
+`🔄 Master -> Project Transfer - ${proj}
+bash safe.sh transfer ${proj} my-new-project --only-confirmed
+# Project: my-new-project -> 444 LOCKED
+# Only CONFIRMED parts will be transferred
+# Draft ${part} যাবে না, শুধু Confirmed যাবে`;
+}
+function saveAll(){
+ let proj=document.getElementById('proj').value.trim();let part=document.getElementById('part').value.trim();
+ if(!proj){alert('Project Name দাও');return;}
+ if(!part){part='part-03-'+proj;document.getElementById('part').value=part;}
+ localStorage.setItem('proj',proj);localStorage.setItem('part',part);
+ generateCodes();alert('✅ Set: '+proj+' | '+part+' - ৩টা Code Auto Generate হয়েছে!');
+}
+function copyText(id){
+ let t=document.getElementById(id).innerText;
+ navigator.clipboard.writeText(t).then(()=>{alert('📋 Copied: '+id);}).catch(()=>{
+   let ta=document.createElement('textarea');ta.value=t;document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();alert('📋 Copied: '+id);
+ });
+}
+function downloadHTML(){
+ let blob=new Blob([document.documentElement.outerHTML],{type:'text/html'});
+ let a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=(localStorage.getItem('part')||'index')+'_V3.1.html';a.click();
+}
+function changePass(){let np=document.getElementById('newPass').value.trim();if(np.length<2){alert('Password দাও');return;}localStorage.setItem('surokkha_pass',btoa(np));document.getElementById('passMsg').innerText='✅ New: '+np;document.getElementById('newPass').value='';}
+function lockNow(){sessionStorage.removeItem('unlocked');location.reload();}
+window.onload=()=>{
+ initLock();
+ let pr=localStorage.getItem('proj')||'projectsurokkha-system';let pa=localStorage.getItem('part')||'part-03-projectsurokkha-system';
+ document.getElementById('proj').value=pr;document.getElementById('part').value=pa;generateCodes();
+ document.getElementById('proj').addEventListener('input',generateCodes);document.getElementById('part').addEventListener('input',generateCodes);
+};
+</script></body></html>
